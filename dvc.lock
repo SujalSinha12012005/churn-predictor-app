@@ -1,0 +1,22 @@
+schema: '2.0'
+stages:
+  train_model:
+    cmd: python src/models/train.py
+    deps:
+    - path: data/processed/customers_clean.csv
+      hash: md5
+      md5: 1b2795f54e0ffed3062323f37a1663cc
+      size: 354273
+    - path: src/models/train.py
+      hash: md5
+      md5: 8c667b2a5492bc2f2dda8b98b9bbb907
+      size: 2147
+    outs:
+    - path: models/logistic_model.pkl
+      hash: md5
+      md5: 9ce51bf51efb250471edf32f5bec9ea2
+      size: 1551
+    - path: models/training_columns.pkl
+      hash: md5
+      md5: 27c17f10aea202dffe8121271d1bc949
+      size: 297

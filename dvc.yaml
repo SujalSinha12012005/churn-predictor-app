@@ -1,0 +1,9 @@
+stages:
+  train_model:
+    cmd: python src/models/train.py
+    deps:
+    - data/processed/customers_clean.csv
+    - src/models/train.py
+    outs:
+    - models/logistic_model.pkl
+    - models/training_columns.pkl
