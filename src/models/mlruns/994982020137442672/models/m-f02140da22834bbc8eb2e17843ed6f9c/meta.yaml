@@ -1,0 +1,10 @@
+artifact_location: file:///C:/Users/Sujit%20Kumar%20Sinha/ml_project/src/models/mlruns/994982020137442672/models/m-f02140da22834bbc8eb2e17843ed6f9c/artifacts
+creation_timestamp: 1751976410891
+experiment_id: '994982020137442672'
+last_updated_timestamp: 1751976419976
+model_id: m-f02140da22834bbc8eb2e17843ed6f9c
+model_type: null
+name: logistic_model
+source_run_id: 5651772e49a14c3fa677a0aed4573576
+status: 2
+status_message: null

@@ -1,0 +1,14 @@
+artifact_uri: mlflow-artifacts:/217710305320154016/37c6bb5d0e5542d9a8b58e63410bb655/artifacts
+end_time: 1751984923960
+entry_point_name: ''
+experiment_id: '217710305320154016'
+lifecycle_stage: active
+run_id: 37c6bb5d0e5542d9a8b58e63410bb655
+run_name: efficient-shark-217
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1751984911422
+status: 3
+tags: []
+user_id: Sujit Kumar Sinha
