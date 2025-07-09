@@ -1,70 +1,63 @@
-# app.py
 import streamlit as st
 import pandas as pd
 import joblib
+import os
 
-# --- Load model and columns ---
-model = joblib.load(r"C:\\Users\Sujit Kumar Sinha\\ml_project\\models\\logistic_model.pkl")
-columns = joblib.load(r"C:\\Users\\Sujit Kumar Sinha\\ml_project\\models\\training_columns.pkl")
+# --- Load model and training columns using relative paths ---
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+model_path = os.path.join(BASE_DIR, "..", "models", "logistic_model.pkl")
+columns_path = os.path.join(BASE_DIR, "..", "models", "training_columns.pkl")
 
-st.title("Customer Churn Predictor")
+# Load model
+model = joblib.load(model_path)
 
-# --- UI for inputs ---
-gender = st.selectbox("Gender", ["Male", "Female"])
-senior = st.selectbox("Senior Citizen", [0, 1])
-partner = st.selectbox("Partner", ["Yes", "No"])
-dependents = st.selectbox("Dependents", ["Yes", "No"])
-tenure = st.slider("Tenure (months)", 0, 72, 12)
-phoneservice = st.selectbox("Phone Service", ["Yes", "No"])
-multiplelines = st.selectbox("Multiple Lines", ["Yes", "No", "No phone service"])
-internet = st.selectbox("Internet Service", ["DSL", "Fiber optic", "No"])
-onlinesecurity = st.selectbox("Online Security", ["Yes", "No", "No internet service"])
-onlinebackup = st.selectbox("Online Backup", ["Yes", "No", "No internet service"])
-deviceprotection = st.selectbox("Device Protection", ["Yes", "No", "No internet service"])
-techsupport = st.selectbox("Tech Support", ["Yes", "No", "No internet service"])
-streamingtv = st.selectbox("Streaming TV", ["Yes", "No", "No internet service"])
-streamingmovies = st.selectbox("Streaming Movies", ["Yes", "No", "No internet service"])
-contract = st.selectbox("Contract Type", ["Month-to-month", "One year", "Two year"])
-paperless = st.selectbox("Paperless Billing", ["Yes", "No"])
-payment = st.selectbox("Payment Method", ["Electronic check", "Mailed check", "Bank transfer (automatic)", "Credit card (automatic)"])
-monthly = st.number_input("Monthly Charges", min_value=0.0)
-total = st.number_input("Total Charges", min_value=0.0)
+# Load training columns
+with open(columns_path, "rb") as f:
+    training_columns = joblib.load(f)
 
-# --- Predict button ---
+# --- Streamlit UI ---
+st.title("Customer Churn Prediction")
+
+# Input fields
+st.header("Enter Customer Details:")
+input_data = {
+    "gender": st.selectbox("Gender", ["Male", "Female"]),
+    "SeniorCitizen": st.selectbox("Senior Citizen", [0, 1]),
+    "Partner": st.selectbox("Partner", ["Yes", "No"]),
+    "Dependents": st.selectbox("Dependents", ["Yes", "No"]),
+    "tenure": st.slider("Tenure (months)", 0, 72, 12),
+    "PhoneService": st.selectbox("Phone Service", ["Yes", "No"]),
+    "MultipleLines": st.selectbox("Multiple Lines", ["Yes", "No", "No phone service"]),
+    "InternetService": st.selectbox("Internet Service", ["DSL", "Fiber optic", "No"]),
+    "OnlineSecurity": st.selectbox("Online Security", ["Yes", "No", "No internet service"]),
+    "OnlineBackup": st.selectbox("Online Backup", ["Yes", "No", "No internet service"]),
+    "DeviceProtection": st.selectbox("Device Protection", ["Yes", "No", "No internet service"]),
+    "TechSupport": st.selectbox("Tech Support", ["Yes", "No", "No internet service"]),
+    "StreamingTV": st.selectbox("Streaming TV", ["Yes", "No", "No internet service"]),
+    "StreamingMovies": st.selectbox("Streaming Movies", ["Yes", "No", "No internet service"]),
+    "Contract": st.selectbox("Contract", ["Month-to-month", "One year", "Two year"]),
+    "PaperlessBilling": st.selectbox("Paperless Billing", ["Yes", "No"]),
+    "PaymentMethod": st.selectbox("Payment Method", [
+        "Electronic check", "Mailed check", "Bank transfer (automatic)", "Credit card (automatic)"
+    ]),
+    "MonthlyCharges": st.number_input("Monthly Charges", value=70.0),
+    "TotalCharges": st.number_input("Total Charges", value=200.0)
+}
+
+# --- Predict ---
 if st.button("Predict Churn"):
-    # Input to DataFrame
-    input_dict = {
-        "gender": gender,
-        "SeniorCitizen": senior,
-        "Partner": partner,
-        "Dependents": dependents,
-        "tenure": tenure,
-        "PhoneService": phoneservice,
-        "MultipleLines": multiplelines,
-        "InternetService": internet,
-        "OnlineSecurity": onlinesecurity,
-        "OnlineBackup": onlinebackup,
-        "DeviceProtection": deviceprotection,
-        "TechSupport": techsupport,
-        "StreamingTV": streamingtv,
-        "StreamingMovies": streamingmovies,
-        "Contract": contract,
-        "PaperlessBilling": paperless,
-        "PaymentMethod": payment,
-        "MonthlyCharges": monthly,
-        "TotalCharges": total
-    }
-
-    df = pd.DataFrame([input_dict])
+    df = pd.DataFrame([input_data])
     df = pd.get_dummies(df)
 
     # Align with training columns
-    for col in columns:
+    for col in training_columns:
         if col not in df.columns:
             df[col] = 0
-    df = df[columns]
+    df = df[training_columns]
 
-    # Make prediction
-    pred = model.predict(df)[0]
-    label = "Yes" if pred == 1 else "No"
-    st.subheader(f"🔮 Churn Prediction: **{label}**")
+    prediction = model.predict(df)[0]
+    probability = model.predict_proba(df)[0][1]
+
+    st.subheader("Prediction Result:")
+    st.write("Churn:" if prediction == 1 else "No Churn")
+    st.write(f"Churn Probability: {probability:.2%}")
